@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Operations</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { margin-bottom: 20px; }
+        input { margin-right: 10px; }
+    </style>
+</head>
+<body>
+
+<h1>CRUD Operations</h1>
+
+<!-- Create User Form -->
+<h2>Create User</h2>
+<form id="createForm">
+    <input type="text" id="createName" placeholder="Name" required>
+    <input type="email" id="createEmail" placeholder="Email" required>
+    <input type="text" id="createPhone" placeholder="Phone" required>
+    <input type="number" id="createAge" placeholder="Age" required>
+    <button type="submit">Create User</button>
+</form>
+
+<!-- Read Users Section -->
+<h2>Read Users</h2>
+<button id="readButton">Show Users</button>
+<div id="usersList"></div>
+
+<!-- Update User Form -->
+<h2>Update User</h2>
+<form id="updateForm">
+    <input type="number" id="updateID" placeholder="User ID" required>
+    <input type="text" id="updateName" placeholder="New Name" required>
+    <input type="email" id="updateEmail" placeholder="New Email" required>
+    <input type="text" id="updatePhone" placeholder="New Phone" required>
+    <input type="number" id="updateAge" placeholder="New Age" required>
+    <button type="submit">Update User</button>
+</form>
+
+<!-- Delete User Form -->
+<h2>Delete User</h2>
+<form id="deleteForm">
+    <input type="number" id="deleteID" placeholder="User ID" required>
+    <button type="submit">Delete User</button>
+</form>
+
+<script>
+    document.getElementById('createForm').onsubmit = async function(event) {
+        event.preventDefault();
+        const response = await fetch('/create_user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: document.getElementById('createName').value,
+                email: document.getElementById('createEmail').value,
+                phone: document.getElementById('createPhone').value,
+                age: document.getElementById('createAge').value
+            })
+        });
+        alert(response.ok ? 'User created successfully!' : 'Error creating user.');
+    };
+
+    document.getElementById('readButton').onclick = async function() {
+        const response = await fetch('/read_users');
+        const users = await response.json();
+        const usersList = document.getElementById('usersList');
+        usersList.innerHTML = '';
+        users.forEach(user => {
+            usersList.innerHTML += `<p>ID: ${user.id}, Name: ${user.name}, Email: ${user.email}, Phone: ${user.phone}, Age: ${user.age}</p>`;
+        });
+    };
+
+    document.getElementById('updateForm').onsubmit = async function(event) {
+        event.preventDefault();
+        const response = await fetch('/update_user', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: document.getElementById('updateID').value,
+                name: document.getElementById('updateName').value,
+                email: document.getElementById('updateEmail').value,
+                phone: document.getElementById('updatePhone').value,
+                age: document.getElementById('updateAge').value
+            })
+        });
+        alert(response.ok ? 'User updated successfully!' : 'Error updating user.');
+    };
+
+    document.getElementById('deleteForm').onsubmit = async function(event) {
+        event.preventDefault();
+        const response = await fetch('/delete_user', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: document.getElementById('deleteID').value })
+        });
+        alert(response.ok ? 'User deleted successfully!' : 'Error deleting user.');
+    };
+</script>
+
+</body>
+</html>
